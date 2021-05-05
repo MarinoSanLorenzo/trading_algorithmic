@@ -21,3 +21,9 @@ class TestPlots:
     def test_stack_data(self, stock_data: pd.DataFrame):
         open_prices_plot = plot(stock_data, y="Open")
         open_prices_plot.show()
+
+    def test_plot_low_high_prices(self, data):
+        name = "ethereum"
+        ethereum = data[name]
+        low_high_plot = plot_low_high_prices(ethereum, name)
+        low_high_plot.show()
