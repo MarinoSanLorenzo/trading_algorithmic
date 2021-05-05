@@ -1,11 +1,22 @@
-import pandas_datareader.data as web
+
 import datetime
-import dtale
-
-start = datetime.datetime(2019, 1, 1)
-end = datetime.datetime(2021,1,1)
-
-bitcoin  = web.get_data_yahoo('BTC-USD', start=start, end=end)
-ethereum = web.get_data_yahoo('ETH-USD', start=start, end=end)
+from src.constants import params
+import dash
 
 
+from src.utils import *
+from src.frontend.layout import
+def main():
+
+    app = dash.Dash(__name__, external_stylesheets=params.get('STYLE_SHEET'))
+
+
+
+
+
+
+
+
+
+# if __name__ == '__main__':
+#     main()
