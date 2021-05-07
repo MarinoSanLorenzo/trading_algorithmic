@@ -5,30 +5,17 @@ import plotly
 from dash.dependencies import Input, Output
 import dash
 from src.constants import params
+from dash_main import *
 
-__all__ = ["plot", "plot_low_high_prices", "update_plot_low_high_prices"]
-
-app = dash.Dash("__main__", external_stylesheets=params.get("STYLE_SHEET"))
+__all__ = ["plot", "plot_low_high_prices"]
 
 
-@app.callback(
-    Output("price_plot", "figure"), Input("year-slider", "value"),
-)
-def update_plot_low_high_prices(
-    selected_year, df: pd.DataFrame, name: str
-) -> plotly.graph_objects.Figure:
-    filtered_df = df[df.date >= selected_year]
-
-    fig = plot_low_high_prices(filtered_df, name)
-
-    fig.update_layout(transition_duration=500)
-
-    return fig
 
 
 def plot(
     data: pd.DataFrame,
     y,
+    title=None,
     x="date",
     label="stock_name",
     line_shape="spline",
@@ -38,6 +25,7 @@ def plot(
         data,
         x=x,
         y=y,
+        title=title,
         color=label,
         line_group=label,
         hover_name=label,
@@ -86,3 +74,4 @@ def plot_low_high_prices(df: pd.DataFrame, name: str) -> plotly.graph_objects.Fi
         yaxis_title="Prices",
     )
     return fig
+

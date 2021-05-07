@@ -5,6 +5,11 @@ from src.constants import params
 
 
 @pytest.fixture
+def selected_stocks() -> dict:
+    selected_stocks=['bitcoin', 'ethereum']
+    return selected_stocks
+
+@pytest.fixture
 def data() -> dict:
     data = get_data(params, stocks=["bitcoin", "ethereum"])
     return data
@@ -19,6 +24,13 @@ def stock_data(data: dict) -> pd.DataFrame:
     return stock_data
 
 
+@pytest.fixture
+def stock_data_filtered(stock_data: pd.DataFrame, selected_stocks:list) -> pd.DataFrame:
+    stock_data_filtered = stock_data[stock_data.stock_name.isin(selected_stocks)]
+    return stock_data_filtered
+
+
+
 class TestData:
     def test_stack_data(self, data: dict):
         stock_data = stack_data(data)
@@ -29,3 +41,5 @@ class TestData:
     def test_get_data(self, data: dict):
         assert isinstance(data, dict)
         assert data["bitcoin"].shape == data["ethereum"].shape
+
+
