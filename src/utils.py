@@ -1,8 +1,13 @@
 import pandas_datareader.data as web
 import pandas as pd
 
-__all__ = ["get_data", "stack_data", "get_date_max_min_volume_traded"]
+__all__ = ["get_data", "stack_data", "get_date_max_min_volume_traded", "get_moving_average"]
 
+
+def get_moving_average(stock_data:pd.DataFrame,stock_name:str, time_horizon:int) ->pd.DataFrame:
+    data = stock_data.query(f'stock_name=="{stock_name}"')
+    data[f'MA{time_horizon}'] = data['Open'].rolling(time_horizon).mean()
+    return data
 
 def get_date_max_min_volume_traded(stock_data:pd.DataFrame, stock_name:str) -> pd.DataFrame:
     data = stock_data.query(f'stock_name=="{stock_name}"')

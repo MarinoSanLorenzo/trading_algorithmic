@@ -20,6 +20,8 @@ def main():
     data = get_data(params, stocks=["bitcoin", "ethereum"])
     stock_data = stack_data(data)
     stock_data['Total Traded'] = stock_data['Open']*stock_data['Volume']
+
+
     dates_vol_traded = [get_date_max_min_volume_traded(stock_data, stock) for stock in stocks]
     information = pd.merge(*dates_vol_traded, on='variable_name')
 
