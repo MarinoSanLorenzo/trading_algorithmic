@@ -1,7 +1,15 @@
 import pandas_datareader.data as web
 import pandas as pd
 
-__all__ = ["get_data", "stack_data"]
+__all__ = ["get_data", "stack_data", "get_date_max_min_volume_traded"]
+
+
+def get_date_max_min_volume_traded(stock_data:pd.DataFrame, stock_name:str) -> pd.DataFrame:
+    data = stock_data.query(f'stock_name=="{stock_name}"')
+    date_max_vol_traded = data.index[data['Total Traded'].argmax()]
+    date_min_vol_traded = data.index[data['Total Traded'].argmin()]
+    return pd.DataFrame.from_dict({'variable_name':['date_max_vol_traded','date_min_vol_traded'],
+                                 stock_name:[date_max_vol_traded,date_min_vol_traded]})
 
 
 def stack_data(data: dict) -> pd.DataFrame:

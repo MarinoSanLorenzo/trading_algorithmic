@@ -5,6 +5,7 @@ import pandas as pd
 import dash
 from src.constants import params
 from dash_main import app
+import dash_table
 
 
 def get_layout(params:dict  ) -> html.Div:
@@ -34,12 +35,21 @@ def get_layout(params:dict  ) -> html.Div:
                                 dcc.Graph(figure=params.get('bitcoin_low_high_plot')),
                                 dcc.Graph(figure=params.get('ethereum_low_high_plot')),
                                 dcc.Graph(figure=params.get('volume_plot')),
+                                dcc.Graph(figure=params.get('total_traded_plot')),
 
                                   ],
 
                     ),
                     dcc.Tab(
-                        label="High-Low Price"
+                        label="Some information",
+                        children=[
+                             dash_table.DataTable(
+                                 columns=[{"name": i, "id": i} for i in params.get('information').columns],
+                                 data=params.get('information').to_dict('records'),
+
+                             )
+
+                        ]
 
                     ),
                 ]

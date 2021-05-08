@@ -21,6 +21,7 @@ def stock_data(data: dict) -> pd.DataFrame:
         df["stock_name"] = name
         df["date"] = df.index
     stock_data = pd.concat([df for df in data.values()])
+    stock_data['Total Traded'] = stock_data['Open'] * stock_data['Volume']
     return stock_data
 
 
@@ -29,6 +30,14 @@ def stock_data_filtered(stock_data: pd.DataFrame, selected_stocks:list) -> pd.Da
     stock_data_filtered = stock_data[stock_data.stock_name.isin(selected_stocks)]
     return stock_data_filtered
 
+
+@pytest.fixture
+def data_vol_traded(stock_data: pd.DataFrame):
+    data = stock_data.query(f'stock_name=="bitcoin"')
+    date_max_vol_traded = data.index[data['Total Traded'].argmax()]
+    date_min_vol_traded = data.index[data['Total Traded'].argmin()]
+    date_vol_traded =pd.DataFrame.from_dict({'variable_name': ['date_max_vol_traded', 'date_min_vol_traded'],
+                            'bitcoin': [date_max_vol_traded, date_min_vol_traded]})
 
 
 class TestData:
