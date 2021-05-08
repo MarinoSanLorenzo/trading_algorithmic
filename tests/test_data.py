@@ -85,10 +85,12 @@ def data_return(tock_data: pd.DataFrame) -> pd.DataFrame:
     stock_name = "bitcoin"
     data = stock_data.query(f'stock_name=="{stock_name}"')
     data["returns"] = data["Close"].pct_change(1)
+    data["cum_returns"] = (1+data["returns"]).cumprod()
 
     stock_name = "ethereum"
     data1 = stock_data.query(f'stock_name=="{stock_name}"')
     data1["returns"] = data1["Close"].pct_change(1)
+    data["cum_returns"] = (1 + data["returns"]).cumprod()
 
     data_return = pd.concat([data, data1])
     return data_return
@@ -105,11 +107,14 @@ class TestData:
     def test_get_stock_data_returns(self, stock_data: pd.DataFrame):
         stock_data_returns = get_stock_data_returns(stock_data, params)
         assert "returns" in stock_data_returns.columns
+        assert "cum_returns" in stock_data_returns.columns
         assert stock_data_returns.shape[0] == stock_data.shape[0]
+
 
     def test_get_return(self, stock_data: pd.DataFrame):
         data_return = get_return(stock_data, "bitcoin")
         assert "returns" in data_return.columns
+        assert "cum_returns" in data_return.columns
 
     def test_stack_data(self, data: dict):
         stock_data = stack_data(data)

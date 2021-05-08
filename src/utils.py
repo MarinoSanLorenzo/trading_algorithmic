@@ -24,6 +24,7 @@ def get_stock_data_returns(stock_data: pd.DataFrame, params: dict) -> pd.DataFra
 def get_return(stock_data: pd.DataFrame, stock_name: str) -> pd.DataFrame:
     data = stock_data.query(f'stock_name=="{stock_name}"')
     data["returns"] = data["Close"].pct_change(1)
+    data["cum_returns"] = (1 + data["returns"]).cumprod()
     return data
 
 
