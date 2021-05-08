@@ -13,10 +13,10 @@ __all__ = ["plot", "plot_low_high_prices", "plot_moving_average", "plot_scatter_
 
 
 
-def plot_scatter_matrix(data:dict, params:dict) -> np.array:
+def plot_scatter_matrix(data:dict, params:dict) -> plotly.graph_objects.Figure:
     crypto_comp = pd.concat([data[stock]['Open'] for stock in params.get('STOCK_CODES')], axis=1)
-    crypto_comp.columns = [f'{stock} Open' for stock in params.get('STOCK_CODES')]
-    return scatter_matrix(crypto_comp, figsize=(8, 8), alpha=0.2, hist_kwds={'bins': 50})
+    crypto_comp.columns = [f'{stock.capitalize()} Open' for stock in params.get('STOCK_CODES')]
+    return px.scatter_matrix(crypto_comp)
 
 def plot(
     data: pd.DataFrame,

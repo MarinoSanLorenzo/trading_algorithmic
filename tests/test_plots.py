@@ -4,6 +4,7 @@ from src.utils import *
 from src.constants import params
 from src.frontend.plots import *
 from pandas.plotting import scatter_matrix
+import plotly.express as px
 
 
 
@@ -36,8 +37,9 @@ def stock_data_ma(stock_data: pd.DataFrame, stocks:list) -> pd.DataFrame:
 class TestPlots:
     def test_scatter_matrix_plot(self, data:pd.DataFrame):
         crypto_comp = pd.concat([data[stock]['Open'] for stock in params.get('STOCK_CODES')], axis=1)
-        crypto_comp.columns = [f'{stock} Open' for stock in params.get('STOCK_CODES')]
-        scatter_plot = scatter_matrix(crypto_comp, figsize=(8, 8), alpha=0.2, hist_kwds={'bins': 50});
+        crypto_comp.columns = [f'{stock.capitalize()} Open' for stock in params.get('STOCK_CODES')]
+        fig = px.scatter_matrix(crypto_comp)
+        fig.show()
 
     def test_stack_data(self, stock_data: pd.DataFrame):
         open_prices_plot = plot(stock_data, y="Open", title='Open Prices')
