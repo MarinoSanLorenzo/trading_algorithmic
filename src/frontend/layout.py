@@ -38,6 +38,7 @@ def get_layout(params: dict) -> html.Div:
                                 figure=params.get("ethereum_moving_average_plot")
                             ),
                             dcc.Graph(figure=params.get("scatter_matrix_plot")),
+                            html.Div('Distribution of Returns'),
                             dcc.Graph(figure=params.get("dist_returns_plots")),
                         ],
                     ),

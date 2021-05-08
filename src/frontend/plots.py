@@ -21,8 +21,7 @@ __all__ = [
 
 def plot_dist_returns(
     stock_data_returns: pd.DataFrame,
-    params: dict,
-    title: str = "Distribution of Returns",
+    params: dict
 ) -> plotly.graph_objects.Figure:
     hist_data = [
         stock_data_returns.query(f'stock_name=="{stock}"')["returns"]
@@ -30,11 +29,11 @@ def plot_dist_returns(
     ]
     group_labels = [stock for stock in params.get("STOCK_CODES")]
     try:
-        fig = ff.create_distplot(hist_data, group_labels, bin_size=0.01, title=title)
+        fig = ff.create_distplot(hist_data, group_labels, bin_size=0.01)
     except ValueError:
         for data in hist_data:
             data.dropna(inplace=True)
-        fig = ff.create_distplot(hist_data, group_labels, bin_size=0.01, title=title)
+        fig = ff.create_distplot(hist_data, group_labels, bin_size=0.01)
     return fig
 
 
