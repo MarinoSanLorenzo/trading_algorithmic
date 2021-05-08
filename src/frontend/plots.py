@@ -1,4 +1,6 @@
+import numpy as np
 import pandas as pd
+from pandas.plotting import scatter_matrix
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly
@@ -7,10 +9,14 @@ import dash
 from src.constants import params
 from dash_main import *
 
-__all__ = ["plot", "plot_low_high_prices", "plot_moving_average"]
+__all__ = ["plot", "plot_low_high_prices", "plot_moving_average", "plot_scatter_matrix"]
 
 
 
+def plot_scatter_matrix(data:dict, params:dict) -> np.array:
+    crypto_comp = pd.concat([data[stock]['Open'] for stock in params.get('STOCK_CODES')], axis=1)
+    crypto_comp.columns = [f'{stock} Open' for stock in params.get('STOCK_CODES')]
+    return scatter_matrix(crypto_comp, figsize=(8, 8), alpha=0.2, hist_kwds={'bins': 50})
 
 def plot(
     data: pd.DataFrame,
@@ -104,6 +110,7 @@ def plot_low_high_prices(df: pd.DataFrame, name: str) -> plotly.graph_objects.Fi
 
 def plot_moving_average(df:pd.DataFrame, name: str)-> plotly.graph_objects.Figure:
 
+    df = df.query(f'stock_name=="{name}"')
     fig = go.Figure()
     # Create and style traces
     fig = add_trace_moving_average(fig, df)

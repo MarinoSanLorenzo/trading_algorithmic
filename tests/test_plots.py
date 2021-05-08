@@ -3,6 +3,9 @@ import pandas as pd
 from src.utils import *
 from src.constants import params
 from src.frontend.plots import *
+from pandas.plotting import scatter_matrix
+
+
 
 @pytest.fixture
 def stocks() -> dict:
@@ -27,15 +30,15 @@ def stock_data(data: dict) -> pd.DataFrame:
 
 @pytest.fixture
 def stock_data_ma(stock_data: pd.DataFrame, stocks:list) -> pd.DataFrame:
-
-    for stock in stocks:
-        data = stock_data[stock_data.stock_name==stock]
-        data['MA50'] = data['Open'].rolling(50).mean()
-        data['MA200'] = data['Open'].rolling(200).mean()
-        stock_data_ma = pd.merge(stock_data, data[['MA50', 'MA200', 'stock_name']],how='left', on=['stock_name', 'Date'])
+    return get_moving_averages(stock_data, params)
     return stock_data_ma
 
 class TestPlots:
+    def test_scatter_matrix_plot(self, data:pd.DataFrame):
+        crypto_comp = pd.concat([data[stock]['Open'] for stock in params.get('STOCK_CODES')], axis=1)
+        crypto_comp.columns = [f'{stock} Open' for stock in params.get('STOCK_CODES')]
+        scatter_plot = scatter_matrix(crypto_comp, figsize=(8, 8), alpha=0.2, hist_kwds={'bins': 50});
+
     def test_stack_data(self, stock_data: pd.DataFrame):
         open_prices_plot = plot(stock_data, y="Open", title='Open Prices')
         open_prices_plot.show()
@@ -58,5 +61,9 @@ class TestPlots:
     def test_plot_moving_average(self, stock_data_ma: pd.DataFrame):
         name = "ethereum"
         ethereum = stock_data_ma.query(f'stock_name=="{name}"')
-        moving_average_plot = plot_moving_average(ethereum, name)
-        moving_average_plot.show()
+        ethereum_moving_average_plot = plot_moving_average(ethereum, name)
+        ethereum_moving_average_plot.show()
+        name = "bitcoin"
+        bitcoin = stock_data_ma.query(f'stock_name=="{name}"')
+        bitcoin_moving_average_plot = plot_moving_average(bitcoin, name)
+        bitcoin_moving_average_plot.show()

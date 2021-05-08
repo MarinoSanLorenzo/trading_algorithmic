@@ -58,12 +58,17 @@ def stock_data_ma(stock_data: pd.DataFrame, stocks) -> pd.DataFrame:
         ma_name = f'MA{time_horizon}'
         for stock in stocks:
             df_ma_stock = get_moving_average(stock_data_ma,stock, time_horizon)
-        mas[ma_name].append(df_ma_stock)
+            mas[ma_name].append(df_ma_stock)
     df_ma_dic = {}
     for ma_name, df_ma_stock_lst in mas.items():
         df_ma_dic[ma_name] = pd.concat(df_ma_stock_lst)
 
-    for
+    first_df_to_be_merged = list(df_ma_dic.values())[0]
+    first_df_name = list(df_ma_dic.keys())[0]
+    for df_name, df_ma in df_ma_dic.items():
+        if df_name!=first_df_name:
+            first_df_to_be_merged = pd.merge(first_df_to_be_merged,df_ma[['stock_name',df_name]],on=['stock_name', 'Date'])
+    stock_data_ma = first_df_to_be_merged
     return stock_data_ma
 
 class TestData:

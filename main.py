@@ -25,6 +25,8 @@ def main():
     dates_vol_traded = [get_date_max_min_volume_traded(stock_data, stock) for stock in stocks]
     information = pd.merge(*dates_vol_traded, on='variable_name')
 
+    stock_data = get_moving_averages(stock_data, params)
+
 
     params['information'] = information
     ###########################################################
@@ -38,6 +40,11 @@ def main():
 
     params['volume_plot'] = plot(stock_data, y="Volume", title='Volume traded')
     params['total_traded_plot'] = plot(stock_data, y="Total Traded", title='Total Traded')
+
+    for stock in stocks:
+        params[f'{stock}_moving_average_plot'] = plot_moving_average(stock_data, stock)
+
+    params['scatter_matrix_plot'] = plot_scatter_matrix(data, params)
 
     app.layout = get_layout(params)
     app.run_server(debug=True)

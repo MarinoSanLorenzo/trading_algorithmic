@@ -36,6 +36,9 @@ def get_layout(params:dict  ) -> html.Div:
                                 dcc.Graph(figure=params.get('ethereum_low_high_plot')),
                                 dcc.Graph(figure=params.get('volume_plot')),
                                 dcc.Graph(figure=params.get('total_traded_plot')),
+                                dcc.Graph(figure=params.get('bitcoin_moving_average_plot')),
+                                dcc.Graph(figure=params.get('ethereum_moving_average_plot')),
+                                dcc.Graph(figure=params.get('scatter_matrix_plot')),
 
                                   ],
 
