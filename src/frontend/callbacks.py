@@ -10,7 +10,6 @@ from src.utils import *
 from dash_main import *
 
 
-
 # @app.callback(
 #     Output(component_id='selected_stocks_debug', component_property='children'),
 #     Input(component_id='stock_inputs', component_property='value')

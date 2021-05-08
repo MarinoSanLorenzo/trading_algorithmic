@@ -4,13 +4,13 @@ from src.utils import *
 from src.constants import params
 from src.frontend.plots import *
 from pandas.plotting import scatter_matrix
+import plotly.figure_factory as ff
 import plotly.express as px
-
 
 
 @pytest.fixture
 def stocks() -> dict:
-    stocks=['bitcoin', 'ethereum']
+    stocks = ["bitcoin", "ethereum"]
     return stocks
 
 
@@ -26,23 +26,51 @@ def stock_data(data: dict) -> pd.DataFrame:
         df["stock_name"] = name
         df["date"] = df.index
     stock_data = pd.concat([df for df in data.values()])
-    stock_data['Total Traded'] = stock_data['Open'] * stock_data['Volume']
+    stock_data["Total Traded"] = stock_data["Open"] * stock_data["Volume"]
     return stock_data
 
+
 @pytest.fixture
-def stock_data_ma(stock_data: pd.DataFrame, stocks:list) -> pd.DataFrame:
+def stock_data_ma(stock_data: pd.DataFrame, stocks: list) -> pd.DataFrame:
     return get_moving_averages(stock_data, params)
     return stock_data_ma
 
+
+@pytest.fixture
+def stock_data_returns(stock_data: pd.DataFrame) -> pd.DataFrame:
+    stock_data_returns = pd.concat(
+        [get_return(stock_data, stock) for stock in params.get("STOCK_CODES")]
+    )
+    return stock_data_returns
+
+
 class TestPlots:
-    def test_scatter_matrix_plot(self, data:pd.DataFrame):
-        crypto_comp = pd.concat([data[stock]['Open'] for stock in params.get('STOCK_CODES')], axis=1)
-        crypto_comp.columns = [f'{stock.capitalize()} Open' for stock in params.get('STOCK_CODES')]
+    def test_dist_returns_plots(self, stock_data_returns: pd.DataFrame):
+        hist_data = [
+            stock_data_returns.query(f'stock_name=="{stock}"')["returns"]
+            for stock in params.get("STOCK_CODES")
+        ]
+        group_labels = [stock for stock in params.get("STOCK_CODES")]
+        try:
+            fig = ff.create_distplot(hist_data, group_labels, bin_size=0.01)
+        except ValueError:
+            for data in hist_data:
+                data.dropna(inplace=True)
+            fig = ff.create_distplot(hist_data, group_labels, bin_size=0.01)
+        fig.show()
+
+    def test_scatter_matrix_plot(self, data: pd.DataFrame):
+        crypto_comp = pd.concat(
+            [data[stock]["Open"] for stock in params.get("STOCK_CODES")], axis=1
+        )
+        crypto_comp.columns = [
+            f"{stock.capitalize()} Open" for stock in params.get("STOCK_CODES")
+        ]
         fig = px.scatter_matrix(crypto_comp)
         fig.show()
 
     def test_stack_data(self, stock_data: pd.DataFrame):
-        open_prices_plot = plot(stock_data, y="Open", title='Open Prices')
+        open_prices_plot = plot(stock_data, y="Open", title="Open Prices")
         open_prices_plot.show()
 
     def test_plot_low_high_prices(self, data):
@@ -51,13 +79,12 @@ class TestPlots:
         low_high_plot = plot_low_high_prices(ethereum, name)
         low_high_plot.show()
 
-
     def test_plot_volume(self, stock_data: pd.DataFrame):
-        volume_plot = plot(stock_data, y="Volume", title='Volume traded')
+        volume_plot = plot(stock_data, y="Volume", title="Volume traded")
         volume_plot.show()
 
     def test_plot_total_traded(self, stock_data: pd.DataFrame):
-        total_traded_plot = plot(stock_data, y="Total Traded", title='Total Traded')
+        total_traded_plot = plot(stock_data, y="Total Traded", title="Total Traded")
         total_traded_plot.show()
 
     def test_plot_moving_average(self, stock_data_ma: pd.DataFrame):

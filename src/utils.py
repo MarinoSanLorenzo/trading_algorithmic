@@ -3,16 +3,40 @@ import pandas as pd
 from collections import defaultdict
 from copy import deepcopy
 
-__all__ = ["get_data", "stack_data", "get_date_max_min_volume_traded", "get_moving_average", "get_moving_averages"]
+__all__ = [
+    "get_data",
+    "stack_data",
+    "get_date_max_min_volume_traded",
+    "get_moving_average",
+    "get_moving_averages",
+    "get_return",
+    "get_stock_data_returns",
+]
 
-def get_moving_averages(stock_data:pd.DataFrame, params:dict, time_horizons:list=[50,200])-> pd.DataFrame:
-    stocks = list(params.get('STOCK_CODES').keys())
+
+def get_stock_data_returns(stock_data: pd.DataFrame, params: dict) -> pd.DataFrame:
+    stock_data_returns = pd.concat(
+        [get_return(stock_data, stock) for stock in params.get("STOCK_CODES")]
+    )
+    return stock_data_returns
+
+
+def get_return(stock_data: pd.DataFrame, stock_name: str) -> pd.DataFrame:
+    data = stock_data.query(f'stock_name=="{stock_name}"')
+    data["returns"] = data["Close"].pct_change(1)
+    return data
+
+
+def get_moving_averages(
+    stock_data: pd.DataFrame, params: dict, time_horizons: list = [50, 200]
+) -> pd.DataFrame:
+    stocks = list(params.get("STOCK_CODES").keys())
     stock_data_ma = deepcopy(stock_data)
-    mas= defaultdict(list)
+    mas = defaultdict(list)
     for time_horizon in time_horizons:
-        ma_name = f'MA{time_horizon}'
+        ma_name = f"MA{time_horizon}"
         for stock in stocks:
-            df_ma_stock = get_moving_average(stock_data_ma,stock, time_horizon)
+            df_ma_stock = get_moving_average(stock_data_ma, stock, time_horizon)
             mas[ma_name].append(df_ma_stock)
     df_ma_dic = {}
     for ma_name, df_ma_stock_lst in mas.items():
@@ -21,23 +45,36 @@ def get_moving_averages(stock_data:pd.DataFrame, params:dict, time_horizons:list
     first_df_to_be_merged = list(df_ma_dic.values())[0]
     first_df_name = list(df_ma_dic.keys())[0]
     for df_name, df_ma in df_ma_dic.items():
-        if df_name!=first_df_name:
-            first_df_to_be_merged = pd.merge(first_df_to_be_merged,df_ma[['stock_name',df_name]],on=['stock_name', 'Date'])
+        if df_name != first_df_name:
+            first_df_to_be_merged = pd.merge(
+                first_df_to_be_merged,
+                df_ma[["stock_name", df_name]],
+                on=["stock_name", "Date"],
+            )
     stock_data_ma = first_df_to_be_merged
     return stock_data_ma
 
-def get_moving_average(stock_data:pd.DataFrame,stock_name:str, time_horizon:int) ->pd.DataFrame:
+
+def get_moving_average(
+    stock_data: pd.DataFrame, stock_name: str, time_horizon: int
+) -> pd.DataFrame:
     data = stock_data.query(f'stock_name=="{stock_name}"')
-    data[f'MA{time_horizon}'] = data['Open'].rolling(time_horizon).mean()
+    data[f"MA{time_horizon}"] = data["Open"].rolling(time_horizon).mean()
     return data
 
 
-def get_date_max_min_volume_traded(stock_data:pd.DataFrame, stock_name:str) -> pd.DataFrame:
+def get_date_max_min_volume_traded(
+    stock_data: pd.DataFrame, stock_name: str
+) -> pd.DataFrame:
     data = stock_data.query(f'stock_name=="{stock_name}"')
-    date_max_vol_traded = data.index[data['Total Traded'].argmax()]
-    date_min_vol_traded = data.index[data['Total Traded'].argmin()]
-    return pd.DataFrame.from_dict({'variable_name':['date_max_vol_traded','date_min_vol_traded'],
-                                 stock_name:[date_max_vol_traded,date_min_vol_traded]})
+    date_max_vol_traded = data.index[data["Total Traded"].argmax()]
+    date_min_vol_traded = data.index[data["Total Traded"].argmin()]
+    return pd.DataFrame.from_dict(
+        {
+            "variable_name": ["date_max_vol_traded", "date_min_vol_traded"],
+            stock_name: [date_max_vol_traded, date_min_vol_traded],
+        }
+    )
 
 
 def stack_data(data: dict) -> pd.DataFrame:
