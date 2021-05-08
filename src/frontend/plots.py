@@ -16,7 +16,21 @@ __all__ = [
     "plot_moving_average",
     "plot_scatter_matrix",
     "plot_dist_returns",
+    "plot_returns_scatter_matrix"
 ]
+
+
+def plot_returns_scatter_matrix(stock_data_returns: pd.DataFrame, params:dict)-> plotly.graph_objects.Figure:
+    returns_comp = pd.concat(
+        [
+            stock_data_returns.query(f'stock_name=="{stock}"')["returns"]
+            for stock in params.get("STOCK_CODES")
+        ], axis=1
+    )
+    returns_comp.columns = [
+        f"{stock.capitalize()} returns" for stock in params.get("STOCK_CODES")
+    ]
+    return px.scatter_matrix(returns_comp)
 
 
 def plot_dist_returns(

@@ -49,7 +49,9 @@ def main():
         params[f"{stock}_moving_average_plot"] = plot_moving_average(stock_data, stock)
 
     params["scatter_matrix_plot"] = plot_scatter_matrix(data, params)
+
     params["dist_returns_plots"] = plot_dist_returns(stock_data, params)
+    params["returns_scatter_matrix_plot"] = plot_returns_scatter_matrix(stock_data, params)
 
     app.layout = get_layout(params)
     app.run_server(debug=True)

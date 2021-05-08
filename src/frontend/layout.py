@@ -40,6 +40,7 @@ def get_layout(params: dict) -> html.Div:
                             dcc.Graph(figure=params.get("scatter_matrix_plot")),
                             html.Div('Distribution of Returns'),
                             dcc.Graph(figure=params.get("dist_returns_plots")),
+                            dcc.Graph(figure=params.get("returns_scatter_matrix_plot")),
                         ],
                     ),
                     dcc.Tab(

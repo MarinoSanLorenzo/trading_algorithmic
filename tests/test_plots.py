@@ -45,6 +45,20 @@ def stock_data_returns(stock_data: pd.DataFrame) -> pd.DataFrame:
 
 
 class TestPlots:
+
+    def test_returns_scatter_matrix_plot(self, stock_data_returns: pd.DataFrame):
+        returns_comp = pd.concat(
+            [
+                stock_data_returns.query(f'stock_name=="{stock}"')["returns"]
+                for stock in params.get("STOCK_CODES")
+            ], axis=1
+        )
+        returns_comp.columns = [
+            f"{stock.capitalize()} returns" for stock in params.get("STOCK_CODES")
+        ]
+        fig = px.scatter_matrix(returns_comp)
+        fig.show()
+
     def test_dist_returns_plots(self, stock_data_returns: pd.DataFrame):
         hist_data = [
             stock_data_returns.query(f'stock_name=="{stock}"')["returns"]
