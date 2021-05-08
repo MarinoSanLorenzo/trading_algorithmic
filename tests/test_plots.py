@@ -46,6 +46,10 @@ def stock_data_returns(stock_data: pd.DataFrame) -> pd.DataFrame:
 
 class TestPlots:
 
+    def test_cum_return_plot(self, stock_data_returns:pd.DataFrame):
+        cum_returns_plot = plot(stock_data_returns, y="cum_returns", title="Cumulative Returns")
+        cum_returns_plot.show()
+
     def test_returns_scatter_matrix_plot(self, stock_data_returns: pd.DataFrame):
         returns_comp = pd.concat(
             [

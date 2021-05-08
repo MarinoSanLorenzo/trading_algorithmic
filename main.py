@@ -52,6 +52,7 @@ def main():
 
     params["dist_returns_plots"] = plot_dist_returns(stock_data, params)
     params["returns_scatter_matrix_plot"] = plot_returns_scatter_matrix(stock_data, params)
+    params["cum_return_plot"] = plot_cum_return(stock_data)
 
     app.layout = get_layout(params)
     app.run_server(debug=True)

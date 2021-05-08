@@ -16,9 +16,13 @@ __all__ = [
     "plot_moving_average",
     "plot_scatter_matrix",
     "plot_dist_returns",
-    "plot_returns_scatter_matrix"
+    "plot_returns_scatter_matrix",
+    "plot_cum_return"
 ]
 
+
+def plot_cum_return(stock_data_returns: pd.DataFrame) -> plotly.graph_objects.Figure:
+    return plot(stock_data_returns, y="cum_returns", title="Cumulative Returns")
 
 def plot_returns_scatter_matrix(stock_data_returns: pd.DataFrame, params:dict, title:str="Scatter Matrix for "
                                                                                         "returns")-> \
