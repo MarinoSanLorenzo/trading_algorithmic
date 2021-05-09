@@ -12,9 +12,15 @@ __all__ = [
     "get_moving_averages",
     "get_return",
     "get_stock_data_returns",
+    "get_count_orders"
 ]
 
-
+def get_count_orders(stock_data:pd.DataFrame, stock_name:str, orders_name:str) -> pd.DataFrame:
+    order_strat_name = f'{orders_name[:-len("signal")]}strategy'
+    data = stock_data.query(f'stock_name=="{stock_name}"')
+    count = getattr(data, orders_name).value_counts()
+    variable_names = [f'{idx}_{order_strat_name}' for idx in count.index]
+    return pd.DataFrame.from_dict({'variable_name': variable_names, stock_name: count.values})
 
 def get_stock_data_returns(stock_data: pd.DataFrame, params: dict) -> pd.DataFrame:
     stock_data_returns = pd.concat(

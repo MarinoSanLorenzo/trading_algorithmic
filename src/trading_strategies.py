@@ -7,14 +7,14 @@ __all__ = ['get_technical_analysis', 'get_technical_analysis_all', 'ma_trading',
            'get_strategy_profits', 'get_strategy_profits_all', 'bollinger_bands_trading', 'rsi_trading']
 
 def rsi_trading(data:pd.DataFrame) ->pd.DataFrame:
-    condition = (data['lower_bound'] < data['Open'],
-                 data['upper_bound'] > data['Open'])
+    condition = (data['RSI'] > 30,
+                 data['RSI'] < 70)
     choices = ("buy",
                "sell")
 
-    data['orders_bb_signal'] = np.select(condition, choices, default='hold')
-    data = convert_orders_signal_to_nb(data,'orders_bb_signal')
-    data = get_strategy_profits_all(data,'orders_bb_nb')
+    data['orders_rsi_signal'] = np.select(condition, choices, default='hold')
+    data = convert_orders_signal_to_nb(data,'orders_rsi_signal')
+    data = get_strategy_profits_all(data,'orders_rsi_nb')
     return data
 
 def bollinger_bands_trading(data:pd.DataFrame) ->pd.DataFrame:

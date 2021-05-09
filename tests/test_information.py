@@ -20,6 +20,8 @@ def inf_data() -> tuple:
     stock_data = get_stock_data_returns(stock_data, params)
     stock_data = get_technical_analysis_all(stock_data, params)
     stock_data = ma_trading(stock_data)
+    stock_data = bollinger_bands_trading(stock_data)
+    stock_data = rsi_trading(stock_data)
     inf_data = information, stock_data
     return inf_data
 
@@ -36,7 +38,24 @@ def profits_data(inf_data:tuple) ->pd.DataFrame:
     data[cum_profits_name] = profits
     return data
 
+@pytest.fixture
+def nb_orders_count(self, stock_data:pd.DataFrame) -> pd.DataFrame:
+    stock_name = 'bitcoin'
+    orders_name = 'orders_ma_signal'
+    order_strat_name = f'{orders_name[:-len("signal")]}strategy'
+    data = stock_data.query(f'stock_name=="{stock_name}"')
+    count = getattr(data, orders_name).value_counts()
+    variable_names = [f'{idx}_{order_strat_name}' for idx in count.index]
+    nb_orders_count =  pd.DataFrame.from_dict({'variable_name':variable_names, stock_name:count.values})
+    return nb_orders_count
+
 class TestInformation:
+    get_count_orders
+    def test_nb_orders_count(self, stock_data:pd.DataFrame) -> pd.DataFrame:
+        data = get_count_orders(stock_data, 'bitcoin', 'orders_ma_signal')
+        assert 'variable_name' in data.columns
+        assert 'bitcoin' in data.columns
+        assert data.shape[0]==3
 
     def test_get_strategy_profits_all(self, inf_data:tuple):
         information, stock_data = inf_data

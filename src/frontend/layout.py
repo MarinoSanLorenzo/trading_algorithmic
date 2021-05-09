@@ -55,6 +55,7 @@ def get_layout(params: dict) -> html.Div:
                             dcc.Graph(figure=params.get("rsi_plot")),
                             dcc.Graph(figure=params.get("orders_ma_cum_profits_plot")),
                             dcc.Graph(figure=params.get("orders_bb_cum_profits_plot")),
+                            dcc.Graph(figure=params.get("orders_rsi_cum_profits_plot")),
                             ]),
                     dcc.Tab(
                         label="Some information",
