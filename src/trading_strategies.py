@@ -4,11 +4,31 @@ from talib import RSI, BBANDS
 from src.constants import params
 
 __all__ = ['get_technical_analysis', 'get_technical_analysis_all', 'ma_trading', 'convert_orders_signal_to_nb',
-           'get_strategy_profits', 'get_strategy_profits_all']
+           'get_strategy_profits', 'get_strategy_profits_all', 'bollinger_bands_trading', 'rsi_trading']
 
+def rsi_trading(data:pd.DataFrame) ->pd.DataFrame:
+    condition = (data['lower_bound'] < data['Open'],
+                 data['upper_bound'] > data['Open'])
+    choices = ("buy",
+               "sell")
 
-def ma_trading(stock_data_tas:pd.DataFrame) ->pd.DataFrame:
-    data = stock_data_tas
+    data['orders_bb_signal'] = np.select(condition, choices, default='hold')
+    data = convert_orders_signal_to_nb(data,'orders_bb_signal')
+    data = get_strategy_profits_all(data,'orders_bb_nb')
+    return data
+
+def bollinger_bands_trading(data:pd.DataFrame) ->pd.DataFrame:
+    condition = (data['lower_bound'] < data['Open'],
+                 data['upper_bound'] > data['Open'])
+    choices = ("buy",
+               "sell")
+
+    data['orders_bb_signal'] = np.select(condition, choices, default='hold')
+    data = convert_orders_signal_to_nb(data,'orders_bb_signal')
+    data = get_strategy_profits_all(data,'orders_bb_nb')
+    return data
+
+def ma_trading(data:pd.DataFrame) ->pd.DataFrame:
     condition = (data['MA50'] > data['MA200'],
                  data['MA50'] == data['MA200'],
                  data['MA50'] < data['MA200'])

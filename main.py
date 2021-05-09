@@ -32,6 +32,7 @@ def main():
     stock_data = get_stock_data_returns(stock_data, params)
     stock_data = get_technical_analysis_all(stock_data, params)
     stock_data = ma_trading(stock_data)
+    stock_data = bollinger_bands_trading(stock_data)
 
 
 
@@ -60,7 +61,8 @@ def main():
     params["returns_scatter_matrix_plot"] = plot_returns_scatter_matrix(stock_data, params)
     params["cum_return_plot"] = plot_cum_return(stock_data)
     params["rsi_plot"] = plot_rsi(stock_data)
-    params['orders_ma_cum_profits_plot'] = plot_cum_profits(stock_data, 'orders_ma_cum_profits' ,params)
+    params['orders_ma_cum_profits_plot'] = plot_cum_profits(stock_data, 'orders_ma_cum_profits' ,params, 'MA')
+    params['orders_bb_cum_profits_plot'] = plot_cum_profits(stock_data, 'orders_bb_cum_profits' ,params, 'BB')
 
     for stock in stocks:
         params[f'{stock}_bollinger_plot'] = plot_bollinger_bands(stock_data, stock)
