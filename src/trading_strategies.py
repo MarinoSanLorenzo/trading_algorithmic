@@ -3,7 +3,7 @@ import numpy as np
 from talib import RSI, BBANDS
 from src.constants import params
 
-__all__ = ['get_technical_analysis', 'get_technical_analysis_all', 'ma_trading', 'convert_orders_signal_to_nb']
+__all__ = ['get_technical_analysis', 'get_technical_analysis_all', 'ma_trading', 'convert_orders_signal_to_nb', 'get_strategy_profits']
 
 
 def ma_trading(stock_data_tas:pd.DataFrame) ->pd.DataFrame:
@@ -16,6 +16,15 @@ def ma_trading(stock_data_tas:pd.DataFrame) ->pd.DataFrame:
                "sell")
     data['orders_ma_signal'] = np.select(condition, choices, default='hold')
     data['orders_ma_signal'] = convert_orders_signal_to_nb(data,'orders_ma_signal')
+    return data
+
+def get_strategy_profits(stock_data:pd.DataFrame, stock_name:str, strategy_name:str) ->pd.DataFrame:
+    data = stock_data.query(f'stock_name=="{stock_name}"')
+    cum_order_name = f'{strategy_name}_cum'
+    data[cum_order_name] = data[strategy_name].cumsum()
+    profits = data[cum_order_name] *data['cum_returns']
+    cum_profits_name = f'{strategy_name[:-len("nb")]}_cum_profits'
+    data[cum_profits_name] = profits
     return data
 
 def convert_orders_signal_to_nb(stock_data:pd.DataFrame, serie_name:str) -> pd.DataFrame:

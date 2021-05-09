@@ -20,14 +20,28 @@ def inf_data() -> tuple:
     stock_data = get_stock_data_returns(stock_data, params)
     stock_data = get_technical_analysis_all(stock_data, params)
     stock_data = ma_trading(stock_data)
+    inf_data = information, stock_data
+    return inf_data
 
-    return information, stock_data
+@pytest.fixture
+def profits_data(inf_data:tuple) ->pd.DataFrame:
+    information, stock_data = inf_data
+    strategy_name = 'orders_ma_nb'
+    stock_name = 'bitcoin'
+    data = stock_data.query(f'stock_name=="{stock_name}"')
+    cum_order_name = f'{strategy_name}_cum'
+    data[cum_order_name] = data[strategy_name].cumsum()
+    profits = data[cum_order_name] * data['cum_returns']
+    cum_profits_name = f'{strategy_name[:-len("nb")]}_cum_profits'
+    data[cum_profits_name] = profits
+    return data
 
 class TestInformation:
 
     def test_summary_strategy(self, inf_data:tuple):
         information, stock_data = inf_data
-
+        profits_data= get_strategy_profits(stock_data, 'orders_ma_nb', 'bitcoin')
+        assert
 
     def test_information_tbl(self, inf_data:tuple):
         information = inf_data, _
