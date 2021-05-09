@@ -55,6 +55,7 @@ def main():
     params["dist_returns_plots"] = plot_dist_returns(stock_data, params)
     params["returns_scatter_matrix_plot"] = plot_returns_scatter_matrix(stock_data, params)
     params["cum_return_plot"] = plot_cum_return(stock_data)
+    params["rsi_plot"] = plot_rsi(stock_data)
 
     for stock in stocks:
         params[f'{stock}_bollinger_plot'] = plot_bollinger_bands(stock_data, stock)

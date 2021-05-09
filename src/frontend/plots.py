@@ -18,8 +18,12 @@ __all__ = [
     "plot_dist_returns",
     "plot_returns_scatter_matrix",
     "plot_cum_return",
-    "plot_bollinger_bands"
+    "plot_bollinger_bands",
+    "plot_rsi"
 ]
+
+def plot_rsi(stock_data: pd.DataFrame) -> plotly.graph_objects.Figure:
+    return plot(stock_data, y="RSI", title="Relative Strength Index (RSI)")
 
 
 def add_trace_bollinger_bands(

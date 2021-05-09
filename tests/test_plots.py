@@ -50,7 +50,12 @@ def stock_data_tas(stock_data:pd.DataFrame) -> pd.DataFrame:
     return data
 
 class TestPlots:
-    def test_bollinger_band_plot(self, stock_data_tas):
+
+    def test_rsi_plot(self, stock_data_tas:pd.DataFrame ):
+        fig = plot_rsi(stock_data_tas)
+        fig.show()
+
+    def test_bollinger_band_plot(self, stock_data_tas:pd.DataFrame):
         name = 'bitcoin'
         fig=plot_bollinger_bands(stock_data_tas, name)
         fig.show()
