@@ -34,11 +34,18 @@ def stock_data_trading_ma(self, stock_data_tas: pd.DataFrame) -> pd.DataFrame:
 
 
 class TestTradingStrategy:
+
+    def test_trading_ma(self, stock_data:pd.DataFrame):
+        assert 'orders_ma_signal' in stock_data.columns
+        assert 'orders_ma_nb' in stock_data.columns
+        assert 'orders_ma_cum_profits' in stock_data.columns
+
     def test_convert_orders_signal_to_nb(self, stock_data:pd.DataFrame):
         assert 'orders_ma_nb' in stock_data.columns
 
     def test_trading_strategy_ma(self, stock_data:pd.DataFrame) -> pd.DataFrame:
         assert 'orders_ma_signal' in stock_data.columns
+
 
 
 

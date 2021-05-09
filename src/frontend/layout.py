@@ -46,9 +46,14 @@ def get_layout(params: dict) -> html.Div:
                     ),
                     dcc.Tab(label='Trading analysis',
                             children=[
+                            dcc.Graph(figure=params.get("bitcoin_moving_average_plot")),
+                            dcc.Graph(
+                                figure=params.get("ethereum_moving_average_plot")
+                            ),
                             dcc.Graph(figure=params.get("bitcoin_bollinger_plot")),
                             dcc.Graph(figure=params.get("ethereum_bollinger_plot")),
                             dcc.Graph(figure=params.get("rsi_plot")),
+                            dcc.Graph(figure=params.get("orders_ma_cum_profits_plot")),
                             ]),
                     dcc.Tab(
                         label="Some information",

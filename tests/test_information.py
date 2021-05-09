@@ -38,13 +38,22 @@ def profits_data(inf_data:tuple) ->pd.DataFrame:
 
 class TestInformation:
 
-    def test_summary_strategy(self, inf_data:tuple):
+    def test_get_strategy_profits_all(self, inf_data:tuple):
         information, stock_data = inf_data
-        profits_data= get_strategy_profits(stock_data, 'orders_ma_nb', 'bitcoin')
-        assert
+        data= pd.concat([get_strategy_profits(stock_data, stock, 'orders_ma_nb')for stock in params.get('STOCK_CODES')])
+        assert 'orders_ma_cum_profits' in data.columns
+        assert stock_data.shape[0] == data.shape[0]
+
+
+
+
+    def test_get_strategy_profits(self, inf_data:tuple):
+        information, stock_data = inf_data
+        profits_data= get_strategy_profits(stock_data, 'bitcoin', 'orders_ma_nb')
+        assert 'orders_ma_cum_profits' in profits_data.columns
 
     def test_information_tbl(self, inf_data:tuple):
-        information = inf_data, _
+        information, _ = inf_data
         stocks = list(params.get("STOCK_CODES").keys())
         for stock in stocks:
             assert stock in information.columns

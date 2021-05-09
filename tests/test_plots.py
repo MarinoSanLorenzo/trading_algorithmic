@@ -1,5 +1,6 @@
 import pytest
 import pandas as pd
+from copy import deepcopy
 from src.utils import *
 from src.constants import params
 from src.frontend.plots import *
@@ -23,11 +24,15 @@ def data() -> dict:
 
 @pytest.fixture
 def stock_data(data: dict) -> pd.DataFrame:
-    for name, df in data.items():
-        df["stock_name"] = name
-        df["date"] = df.index
-    stock_data = pd.concat([df for df in data.values()])
+    stocks = list(params.get("STOCK_CODES").keys())
+    data = get_data(params, stocks=["bitcoin", "ethereum"])
+    stock_data = stack_data(data)
     stock_data["Total Traded"] = stock_data["Open"] * stock_data["Volume"]
+
+    stock_data = get_moving_averages(stock_data, params)
+    stock_data = get_stock_data_returns(stock_data, params)
+    stock_data = get_technical_analysis_all(stock_data, params)
+    stock_data = ma_trading(stock_data)
     return stock_data
 
 
@@ -50,6 +55,10 @@ def stock_data_tas(stock_data:pd.DataFrame) -> pd.DataFrame:
     return data
 
 class TestPlots:
+
+    def test_cum_plots(self, stock_data:pd.DataFrame):
+        fig = plot_cum_profits(stock_data, 'orders_ma_cum_profits', params)
+        fig.show()
 
     def test_rsi_plot(self, stock_data_tas:pd.DataFrame ):
         fig = plot_rsi(stock_data_tas)
@@ -119,12 +128,12 @@ class TestPlots:
         total_traded_plot = plot(stock_data, y="Total Traded", title="Total Traded")
         total_traded_plot.show()
 
-    def test_plot_moving_average(self, stock_data_ma: pd.DataFrame):
+    def test_plot_moving_average(self, stock_data: pd.DataFrame):
         name = "ethereum"
-        ethereum = stock_data_ma.query(f'stock_name=="{name}"')
+        ethereum = stock_data.query(f'stock_name=="{name}"')
         ethereum_moving_average_plot = plot_moving_average(ethereum, name)
         ethereum_moving_average_plot.show()
         name = "bitcoin"
-        bitcoin = stock_data_ma.query(f'stock_name=="{name}"')
+        bitcoin = stock_data.query(f'stock_name=="{name}"')
         bitcoin_moving_average_plot = plot_moving_average(bitcoin, name)
         bitcoin_moving_average_plot.show()
