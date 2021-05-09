@@ -33,6 +33,7 @@ def main():
     stock_data = get_technical_analysis_all(stock_data, params)
 
     params["information"] = information
+
     ###########################################################
     #################        FRONT END                 #################
     ###########################################################

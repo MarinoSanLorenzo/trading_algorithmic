@@ -45,7 +45,20 @@ def stock_data_tas(stock_data:pd.DataFrame) -> pd.DataFrame:
     data = pd.concat(datas)
     return data
 
+
+
 class TestTradingStrategy:
+
+    def test_trading_strategy_ma(self, stock_data_tas:pd.DataFrame) -> pd.DataFrame:
+        data = stock_data_tas
+        condition = (data['MA50'] > data['MA200'],
+                    data['MA50'] == data['MA200'],
+                     data['MA50'] < data['MA200'])
+        choices = ("buy",
+                   "hold",
+                   "sell")
+        data['OrderMA'] = np.select(condition,choices)
+
 
     def test_get_technical_analysis_all(self, stock_data:pd.DataFrame):
         data = get_technical_analysis_all(stock_data, params)
