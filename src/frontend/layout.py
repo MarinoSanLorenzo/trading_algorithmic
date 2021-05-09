@@ -44,6 +44,11 @@ def get_layout(params: dict) -> html.Div:
                             dcc.Graph(figure=params.get("cum_return_plot")),
                         ],
                     ),
+                    dcc.Tab(label='Trading analysis',
+                            children=[
+                            dcc.Graph(figure=params.get("bitcoin_bollinger_plot")),
+                            dcc.Graph(figure=params.get("ethereum_bollinger_plot")),
+                            ]),
                     dcc.Tab(
                         label="Some information",
                         children=[

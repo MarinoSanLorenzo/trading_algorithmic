@@ -10,6 +10,7 @@ from src.utils import *
 from src.frontend.layout import *
 from src.frontend.plots import *
 from src.frontend.callbacks import *
+from src.trading_strategies import *
 
 
 def main():
@@ -29,6 +30,7 @@ def main():
 
     stock_data = get_moving_averages(stock_data, params)
     stock_data = get_stock_data_returns(stock_data, params)
+    stock_data = get_technical_analysis_all(stock_data, params)
 
     params["information"] = information
     ###########################################################
@@ -54,6 +56,8 @@ def main():
     params["returns_scatter_matrix_plot"] = plot_returns_scatter_matrix(stock_data, params)
     params["cum_return_plot"] = plot_cum_return(stock_data)
 
+    for stock in stocks:
+        params[f'{stock}_bollinger_plot'] = plot_bollinger_bands(stock_data, stock)
     app.layout = get_layout(params)
     app.run_server(debug=True)
 

@@ -17,9 +17,50 @@ __all__ = [
     "plot_scatter_matrix",
     "plot_dist_returns",
     "plot_returns_scatter_matrix",
-    "plot_cum_return"
+    "plot_cum_return",
+    "plot_bollinger_bands"
 ]
 
+
+def add_trace_bollinger_bands(
+    fig: plotly.graph_objects.Figure, df: pd.DataFrame
+) -> plotly.graph_objects.Figure:
+
+    fig.add_trace(
+        go.Scatter(
+            x=df.index,
+            y=df.upper_bound,
+            name="upper bound",
+            line=dict(color="firebrick", width=1, dash="dash"),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df.index,
+            y=df.lower_bound,
+            name="lower bound",
+            line=dict(color="royalblue", width=1, dash="dash"),
+        )
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=df.index, y=df.Close, name="Closed", line=dict(color="firebrick", width=1)
+        )
+    )
+    return fig
+
+def plot_bollinger_bands(df: pd.DataFrame, name: str) -> plotly.graph_objects.Figure:
+    df = df.query(f'stock_name=="{name}"')
+    fig = go.Figure()
+    # Create and style traces
+    fig = add_trace_bollinger_bands(fig, df)
+    # Edit the layout
+    fig.update_layout(
+        title=f"Bollinger Bands and Close {name} stock",
+        xaxis_title="Date",
+        yaxis_title="Prices",
+    )
+    return fig
 
 def plot_cum_return(stock_data_returns: pd.DataFrame) -> plotly.graph_objects.Figure:
     return plot(stock_data_returns, y="cum_returns", title="Cumulative Returns")

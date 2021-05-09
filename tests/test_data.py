@@ -5,7 +5,7 @@ from collections import defaultdict
 
 from src.utils import *
 from src.constants import params
-
+from src.trading_strategies import *
 
 @pytest.fixture
 def stocks() -> dict:
@@ -95,13 +95,21 @@ def data_return(tock_data: pd.DataFrame) -> pd.DataFrame:
     data_return = pd.concat([data, data1])
     return data_return
 
-
+@pytest.fixture
 def stock_data_returns(stock_data: pd.DataFrame) -> pd.DataFrame:
     stock_data_returns = pd.concat(
         [get_return(stock_data, stock) for stock in params.get("STOCK_CODES")]
     )
     return stock_data_returns
 
+@pytest.fixture
+def stock_data_tas(stock_data:pd.DataFrame) -> pd.DataFrame:
+    datas=[]
+    for stock_name in params.get('STOCK_CODES'):
+        datas.append(get_technical_analysis(stock_data, stock_name))
+
+    data = pd.concat(datas)
+    return data
 
 class TestData:
     def test_get_stock_data_returns(self, stock_data: pd.DataFrame):

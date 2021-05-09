@@ -3,6 +3,7 @@ import pandas as pd
 from src.utils import *
 from src.constants import params
 from src.frontend.plots import *
+from src.trading_strategies import *
 from pandas.plotting import scatter_matrix
 import plotly.figure_factory as ff
 import plotly.express as px
@@ -43,8 +44,16 @@ def stock_data_returns(stock_data: pd.DataFrame) -> pd.DataFrame:
     )
     return stock_data_returns
 
+@pytest.fixture
+def stock_data_tas(stock_data:pd.DataFrame) -> pd.DataFrame:
+    data = get_technical_analysis_all(stock_data, params)
+    return data
 
 class TestPlots:
+    def test_bollinger_band_plot(self, stock_data_tas):
+        name = 'bitcoin'
+        fig=plot_bollinger_bands(stock_data_tas, name)
+        fig.show()
 
     def test_cum_return_plot(self, stock_data_returns:pd.DataFrame):
         cum_returns_plot = plot(stock_data_returns, y="cum_returns", title="Cumulative Returns")
