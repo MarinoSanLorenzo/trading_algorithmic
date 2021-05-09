@@ -3,8 +3,34 @@ import numpy as np
 from talib import RSI, BBANDS
 from src.constants import params
 
-__all__ = ['get_technical_analysis', 'get_technical_analysis_all']
+__all__ = ['get_technical_analysis', 'get_technical_analysis_all', 'ma_trading', 'convert_orders_signal_to_nb']
 
+
+def ma_trading(stock_data_tas:pd.DataFrame) ->pd.DataFrame:
+    data = stock_data_tas
+    condition = (data['MA50'] > data['MA200'],
+                 data['MA50'] == data['MA200'],
+                 data['MA50'] < data['MA200'])
+    choices = ("buy",
+               "hold",
+               "sell")
+    data['orders_ma_signal'] = np.select(condition, choices, default='hold')
+    data['orders_ma_signal'] = convert_orders_signal_to_nb(data,'orders_ma_signal')
+    return data
+
+def convert_orders_signal_to_nb(stock_data:pd.DataFrame, serie_name:str) -> pd.DataFrame:
+    if set(('buy', 'hold', 'sell'))!= set(stock_data[serie_name].unique()):
+        raise ValueError
+    condition = (stock_data[serie_name] == 'buy',
+                 stock_data[serie_name] == 'hold',
+                 stock_data[serie_name] == 'sell'
+                 )
+    choices = (1,
+                 0,
+                 -1
+                 )
+    stock_data[f'{serie_name[:-(len("signal"))]}nb'] = np.select(condition, choices)
+    return stock_data
 
 def get_technical_analysis_all(stock_data:pd.DataFrame, params:dict) -> pd.DataFrame:
     return pd.concat([get_technical_analysis(stock_data, stock_name) for stock_name in params.get('STOCK_CODES')])

@@ -1,4 +1,5 @@
 import pandas_datareader.data as web
+import numpy as np
 import pandas as pd
 from collections import defaultdict
 from copy import deepcopy
@@ -12,6 +13,7 @@ __all__ = [
     "get_return",
     "get_stock_data_returns",
 ]
+
 
 
 def get_stock_data_returns(stock_data: pd.DataFrame, params: dict) -> pd.DataFrame:

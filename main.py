@@ -31,6 +31,7 @@ def main():
     stock_data = get_moving_averages(stock_data, params)
     stock_data = get_stock_data_returns(stock_data, params)
     stock_data = get_technical_analysis_all(stock_data, params)
+    stock_data = ma_trading(stock_data)
 
     params["information"] = information
 
@@ -60,6 +61,7 @@ def main():
 
     for stock in stocks:
         params[f'{stock}_bollinger_plot'] = plot_bollinger_bands(stock_data, stock)
+
     app.layout = get_layout(params)
     app.run_server(debug=True)
 
