@@ -57,7 +57,7 @@ def stock_data_tas(stock_data:pd.DataFrame) -> pd.DataFrame:
 class TestPlots:
 
     def test_cum_plots(self, stock_data:pd.DataFrame):
-        fig = plot_cum_profits(stock_data, 'orders_ma_cum_profits', params)
+        fig = plot_cum_profits(stock_data, 'orders_ma_cum_profits', params, 'MA')
         fig.show()
 
     def test_rsi_plot(self, stock_data_tas:pd.DataFrame ):
