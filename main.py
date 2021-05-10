@@ -35,7 +35,8 @@ def main():
     stock_data = bollinger_bands_trading(stock_data)
     stock_data = rsi_trading(stock_data)
 
-
+    count_orders = get_count_orders_all_strat(stock_data, params)
+    information = pd.concat([information, count_orders])
 
     params["information"] = information
 

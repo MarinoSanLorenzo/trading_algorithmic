@@ -40,6 +40,7 @@ def profits_data(inf_data:tuple) ->pd.DataFrame:
 
 @pytest.fixture
 def nb_orders_count(self, stock_data:pd.DataFrame) -> pd.DataFrame:
+
     stock_name = 'bitcoin'
     orders_name = 'orders_ma_signal'
     order_strat_name = f'{orders_name[:-len("signal")]}strategy'
@@ -49,9 +50,39 @@ def nb_orders_count(self, stock_data:pd.DataFrame) -> pd.DataFrame:
     nb_orders_count =  pd.DataFrame.from_dict({'variable_name':variable_names, stock_name:count.values})
     return nb_orders_count
 
+@pytest.fixture
+def nb_count_orders_all(self, inf_data:pd.DataFrame) -> pd.DataFrame:
+        strategy_name = 'orders_ma_signal'
+        for i,stock in enumerate(params.get('STOCK_CODES')):
+            if i==0:
+                data_basis = get_count_orders(stock_data, stock, strategy_name)
+            if i >0:
+                data = get_count_orders(stock_data, stock, strategy_name)
+                data_basis = pd.merge(data_basis, data, how='left', on='variable_name')
+        nb_count_orders_all = data_basis
+        return nb_count_orders_all
+
 class TestInformation:
-    get_count_orders
-    def test_nb_orders_count(self, stock_data:pd.DataFrame) -> pd.DataFrame:
+
+    def test_nb_count_orders_all_strat(self, inf_data: pd.DataFrame) -> pd.DataFrame:
+        _, stock_data = inf_data
+        strategies = ['orders_ma_signal', 'orders_bb_signal', 'orders_rsi_signal']
+        data = pd.concat([get_count_orders_all(stock_data,s ,params) for s in strategies])
+
+
+
+    def test_nb_count_orders_all(self, inf_data:pd.DataFrame) -> pd.DataFrame:
+        _, stock_data = inf_data
+        strategy_name = 'orders_ma_signal'
+        data = get_count_orders_all(stock_data,strategy_name ,params)
+        assert 'variable_name' in data.columns
+        assert 'bitcoin' in data.columns
+        assert 'ethereum' in data.columns
+        assert data.shape[0]==3
+        assert data.shape[1]==3
+
+    def test_nb_orders_count(self, inf_data:pd.DataFrame) -> pd.DataFrame:
+        _, stock_data = inf_data
         data = get_count_orders(stock_data, 'bitcoin', 'orders_ma_signal')
         assert 'variable_name' in data.columns
         assert 'bitcoin' in data.columns

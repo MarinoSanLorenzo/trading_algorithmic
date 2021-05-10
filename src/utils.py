@@ -12,8 +12,25 @@ __all__ = [
     "get_moving_averages",
     "get_return",
     "get_stock_data_returns",
-    "get_count_orders"
+    "get_count_orders",
+    "get_count_orders_all",
+    "get_count_orders_all_strat"
 ]
+
+def get_count_orders_all_strat(stock_data:pd.DataFrame, params:dict) -> pd.DataFrame:
+    strategies = ['orders_ma_signal', 'orders_bb_signal', 'orders_rsi_signal']
+    return pd.concat([get_count_orders_all(stock_data, s, params) for s in strategies])
+
+
+
+def get_count_orders_all(stock_data:pd.DataFrame, strategy_name:str, params:dict) -> pd.DataFrame:
+    for i, stock in enumerate(params.get('STOCK_CODES')):
+        if i == 0:
+            data_basis = get_count_orders(stock_data, stock, strategy_name)
+        if i > 0:
+            data = get_count_orders(stock_data, stock, strategy_name)
+            data_basis = pd.merge(data_basis, data, how='left', on='variable_name')
+    return data_basis
 
 def get_count_orders(stock_data:pd.DataFrame, stock_name:str, orders_name:str) -> pd.DataFrame:
     order_strat_name = f'{orders_name[:-len("signal")]}strategy'
