@@ -47,6 +47,7 @@ def main():
 
     params["open_prices_plot"] = plot(stock_data, y="Open", title="Open Prices")
 
+
     for stock in stocks:
         params[f"{stock}_low_high_plot"] = plot_low_high_prices(data[stock], stock)
 
