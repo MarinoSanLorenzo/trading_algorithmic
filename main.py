@@ -51,9 +51,11 @@ def main():
 
     params["open_prices_plot"] = plot(stock_data, y="Open", title="Open Prices")
 
-
+    high_low_plots_lst = []
     for stock in stocks:
-        params[f"{stock}_low_high_plot"] = plot_low_high_prices(data[stock], stock)
+        high_low_plots_lst.append(dcc.Graph(figure=plot_low_high_prices(data[stock], stock)) )
+        high_low_plots_lst.append(html.Hr())
+    params['high_low_plots_lst'] = high_low_plots_lst
 
     params["volume_plot"] = plot(stock_data, y="Volume", title="Volume traded")
     params["total_traded_plot"] = plot(
