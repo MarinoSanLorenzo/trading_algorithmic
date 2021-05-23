@@ -39,6 +39,7 @@ def main():
     stock_data = bollinger_bands_trading(stock_data)
     stock_data = rsi_trading(stock_data)
 
+
     count_orders = get_count_orders_all_strat(stock_data, params)
     information = pd.concat([information, count_orders])
 
@@ -63,6 +64,7 @@ def main():
         params[f"{stock}_moving_average_plot"] = plot_moving_average(stock_data, stock)
 
     params["scatter_matrix_plot"] = plot_scatter_matrix(data, params)
+
 
     params["dist_returns_plots"] = plot_dist_returns(stock_data, params)
     params["returns_scatter_matrix_plot"] = plot_returns_scatter_matrix(stock_data, params)
