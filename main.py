@@ -13,13 +13,18 @@ from src.frontend.callbacks import *
 from src.trading_strategies import *
 
 
+params = get_user_inputs(params)
+
 def main():
 
     ###########################################################
     #################     BACKEND                    #################
     ###########################################################
 
-    stocks = list(params.get("STOCK_CODES").keys())
+    # TODO:user input
+    # risk measure
+
+    stocks = params.get("chosen_stocks")
     data = get_data(params, stocks=stocks)
     stock_data = stack_data(data)
     stock_data["Total Traded"] = stock_data["Open"] * stock_data["Volume"]
@@ -62,10 +67,6 @@ def main():
         stock_data, y="Total Traded", title="Total Traded"
     )
 
-    # moving_average_plots_lst = []
-    # for stock in stocks:
-    #     moving_average_plots_lst.append(dcc.Graph(figure=plot_moving_average(stock_data, stock)))
-    #     moving_average_plots_lst.append(html.Hr())
     params['moving_average_plots_lst'] = add_multiplots_components(stock_data, plot_moving_average)
 
 
@@ -81,8 +82,7 @@ def main():
     params['orders_bb_cum_profits_plot'] = plot_cum_profits(stock_data, 'orders_bb_cum_profits' ,params, 'BB')
     params['orders_rsi_cum_profits_plot'] = plot_cum_profits(stock_data, 'orders_rsi_cum_profits' ,params, 'RSI')
 
-    # for stock in stocks:
-    #     params[f'{stock}_bollinger_plot'] = plot_bollinger_bands(stock_data, stock)
+
     params['bolliger_bans_plots_lst'] =  add_multiplots_components(stock_data, plot_bollinger_bands)
     app.layout = get_layout(params)
     app.run_server(debug=True)

@@ -4,7 +4,7 @@ import pandas as pd
 from collections import defaultdict
 from copy import deepcopy
 from types import FunctionType
-
+import datetime
 import dash_html_components as html
 import dash_core_components as dcc
 
@@ -19,8 +19,98 @@ __all__ = [
     "get_count_orders",
     "get_count_orders_all",
     "get_count_orders_all_strat",
-    'add_multiplots_components'
+    'add_multiplots_components',
+    'get_user_inputs'
 ]
+
+
+def get_stock_input(params:dict) -> list:
+    stock_info = params.get("STOCK_CODES")
+    mapping = {str(i):stock_name for i, stock_name in enumerate(stock_info.keys())}
+
+    print(f'Dear User, here is the list of stocks we chose by default for you!')
+
+    for i, stock in mapping.items():
+        print(f'{i}\t{stock}')
+
+    chosen_stocks = list(stock_info.keys())
+    reset_chosen_stock_lst = True
+    done=False
+    while not done:
+        answer = input('Would you like to proceed with this set of stocks?[Y/N]')
+
+        if answer in ['Y', 'y'] and chosen_stocks:
+            done = True
+        else:
+            if reset_chosen_stock_lst:
+                chosen_stocks = []
+                reset_chosen_stock_lst = False
+            answer = input(f'Please enter the index of the stock')
+            if answer in set(mapping.keys()):
+                chosen_stock = mapping[answer]
+                chosen_stocks.append(chosen_stock)
+            else:
+                print(f'The answer {answer} does not correspond to any mapping from our database!')
+            print(f'Currently you have selected: {", ".join(list(set(chosen_stocks)))}')
+    else:
+        print(f'You have selected: {", ".join(list(set(chosen_stocks)))}')
+
+    return list(set(chosen_stocks))
+
+def get_numerical_input(variable:str, type_:str='int') -> int:
+    done = False
+    while not done:
+        try:
+            answer = input(f'Enter the {variable}:')
+            answer = int(answer) if type_ == 'int' else float(answer)
+            done=True
+        except ValueError:
+            print(f'{answer} is not an {type_} value, try again!')
+            done=False
+    else:
+        print(f'The {variable} you selected is:\n {answer}')
+    return answer
+
+def get_date_input(var_:str,params:dict)-> datetime.datetime:
+    done=False
+    date = params.get(var_)
+    while not done:
+        answer = input(f'Would you like to change the {var_.lower()} {date}?[Y/N]')
+        if answer in ['Y','y']:
+           year = get_numerical_input('Year')
+           month = get_numerical_input('Month')
+           day = get_numerical_input('Day')
+           answer = datetime.datetime(year, month, day)
+        else:
+            answer = params.get(var_)
+        final_answer= input(f'Do you confirm this date:{answer}?[Y/N]')
+        if final_answer in ['Y', 'y']:
+            done=True
+    else:
+        print(f'The {var_} you selected is:\n {answer}')
+    return answer
+
+
+def get_user_inputs(params:dict) -> dict:
+    answer = input('Default mode?[Y/N]')
+    if answer in ['Y','y']:
+        params["chosen_stocks"] = list(params.get("STOCK_CODES").keys())
+
+        return params
+
+    chosen_stocks = get_stock_input(params)
+    start_date = get_date_input('START_DATE', params)
+    end_date = get_date_input('END_DATE', params)
+
+
+
+    params['chosen_stocks'] = chosen_stocks
+    params["START_DATE"] = start_date
+    params["END_DATE"] =end_date
+
+    return params
+
+
 
 def add_multiplots_components(stock_data:pd.DataFrame, plot_func:FunctionType) -> list:
     plots_lst = []
