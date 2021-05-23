@@ -51,17 +51,24 @@ def main():
 
     params["open_prices_plot"] = plot(stock_data, y="Open", title="Open Prices")
 
-
+    high_low_plots_lst = []
     for stock in stocks:
-        params[f"{stock}_low_high_plot"] = plot_low_high_prices(data[stock], stock)
+        high_low_plots_lst.append(dcc.Graph(figure=plot_low_high_prices(data[stock], stock)) )
+        high_low_plots_lst.append(html.Hr())
+    params['high_low_plots_lst'] = high_low_plots_lst
 
     params["volume_plot"] = plot(stock_data, y="Volume", title="Volume traded")
     params["total_traded_plot"] = plot(
         stock_data, y="Total Traded", title="Total Traded"
     )
 
-    for stock in stocks:
-        params[f"{stock}_moving_average_plot"] = plot_moving_average(stock_data, stock)
+    # moving_average_plots_lst = []
+    # for stock in stocks:
+    #     moving_average_plots_lst.append(dcc.Graph(figure=plot_moving_average(stock_data, stock)))
+    #     moving_average_plots_lst.append(html.Hr())
+    params['moving_average_plots_lst'] = add_multiplots_components(stock_data, plot_moving_average)
+
+
 
     params["scatter_matrix_plot"] = plot_scatter_matrix(data, params)
 
@@ -74,9 +81,9 @@ def main():
     params['orders_bb_cum_profits_plot'] = plot_cum_profits(stock_data, 'orders_bb_cum_profits' ,params, 'BB')
     params['orders_rsi_cum_profits_plot'] = plot_cum_profits(stock_data, 'orders_rsi_cum_profits' ,params, 'RSI')
 
-    for stock in stocks:
-        params[f'{stock}_bollinger_plot'] = plot_bollinger_bands(stock_data, stock)
-
+    # for stock in stocks:
+    #     params[f'{stock}_bollinger_plot'] = plot_bollinger_bands(stock_data, stock)
+    params['bolliger_bans_plots_lst'] =  add_multiplots_components(stock_data, plot_bollinger_bands)
     app.layout = get_layout(params)
     app.run_server(debug=True)
 
