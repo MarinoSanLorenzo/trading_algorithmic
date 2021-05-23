@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from talib import RSI, BBANDS
 from copy import deepcopy
+from collections import defaultdict
 from src.constants import params
 from statistics import *
 from scipy.stats import *
@@ -12,15 +13,26 @@ from collections import namedtuple
 
 __all__ = ['get_technical_analysis', 'get_technical_analysis_all', 'ma_trading', 'convert_orders_signal_to_nb',
            'get_strategy_profits', 'get_strategy_profits_all', 'bollinger_bands_trading', 'rsi_trading',
-           'get_total_cum_profits', 'get_profit_and_losses', 'get_empiric_var', 'get_risk_measures',  'RiskMeasures']
+           'get_total_cum_profits', 'get_profit_and_losses', 'get_empiric_var', 'get_risk_measures',  'RiskMeasures', 'get_all_strategy_risk_measures']
 
 RiskMeasures = namedtuple('RiskMeasures', 'empiric_var gaussian_var guassian_es non_parameter_var non_parameter_es '
                                           'losses')
 
 
-def get_all_strategy_risk_measures(stock_data:pd.DataFrame, strategy_risk_measures_lst:list)-> pd.DataFrame:
-    pass
+def get_all_strategy_risk_measures(stock_data:pd.DataFrame,     strategy_risk_measures_dic:dict = {
+    'MA':'orders_ma_cum_profits',"BB": 'orders_bb_cum_profits',
+                                  'RSI' :'orders_rsi_cum_profits'})-> pd.DataFrame:
 
+    risk_measures_dic = {strategy:get_risk_measures(stock_data, strategy_losses) for strategy, strategy_losses in
+                         strategy_risk_measures_dic.items()}
+    d = defaultdict(list)
+    for strategy, risk_measure in risk_measures_dic.items():
+        for field in risk_measure._fields:
+            if field!='losses':
+                d[strategy].append(getattr(risk_measure, field))
+    df = pd.DataFrame.from_dict(d)
+    df.index = [field for field in risk_measure._fields if field!='losses']
+    return df
 
 def get_empiric_var(stock_data:pd.DataFrame, strategy_profit_name:str, lvl:float=0.01) -> float:
     profit_and_losses = get_profit_and_losses(stock_data, strategy_profit_name)
@@ -52,7 +64,7 @@ def get_risk_measures(stock_data:pd.DataFrame, strategy_profit_name:str, alpha:f
 
 def get_profit_and_losses(stock_data:pd.DataFrame, strategy_profit_name:str) -> pd.Series:
     total_cum_profits_df = get_total_cum_profits(stock_data, strategy_profit_name)
-    profit_and_losses = total_cum_profits_df.orders_ma_cum_profits.diff()
+    profit_and_losses = getattr(total_cum_profits_df, strategy_profit_name).diff()
     return profit_and_losses
 
 
@@ -74,6 +86,7 @@ def get_total_cum_profits(stock_data:pd.DataFrame, strategy_profit_name:str) -> 
 
     total_cum_profits_df.index = indexes
     return total_cum_profits_df
+
 def rsi_trading(data:pd.DataFrame) ->pd.DataFrame:
     condition = (data['RSI'] > 30,
                  data['RSI'] < 70)

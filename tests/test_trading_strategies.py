@@ -1,6 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
+from collections import defaultdict
 from statistics import *
 from scipy.stats import *
 from math import *
@@ -85,7 +86,7 @@ def risk_var(stock_data:pd.DataFrame) -> float:
         strategy_profit_name = 'orders_ma_cum_profits'
         profit_and_losses = get_profit_and_losses(stock_data, strategy_profit_name)
         losses = profit_and_losses[profit_and_losses<0]
-        var_lvl = profit_and_losses.quantile(quantile_lvl)
+        var_lvl = losses.quantile(quantile_lvl)
         return var_lvl
 
 
@@ -112,7 +113,31 @@ def risk_measures(stock_data:pd.DataFrame) -> RiskMeasures:
     risk_measures  = RiskMeasures(empiric_var, GaussianVaR, GaussianES, NonParamVaR, NonParamES, losses)
     return risk_measures
 
+@pytest.fixture
+def all_strategy_risk_measures(stock_data:pd.DataFrame) -> pd.DataFrame:
+    strategy_risk_measures_dic = {'MA':'orders_ma_cum_profits',"BB": 'orders_bb_cum_profits',
+                                  'RSI' :'orders_rsi_cum_profits'}
+    risk_measures_dic = {strategy:get_risk_measures(stock_data, strategy_losses) for strategy, strategy_losses in
+                         strategy_risk_measures_dic.items()}
+    d = defaultdict(list)
+    for strategy, risk_measure in risk_measures_dic.items():
+        for field in risk_measure._fields:
+            if field!='losses':
+                d[strategy].append(getattr(risk_measure, field))
+    df = pd.DataFrame.from_dict(d)
+    df.index = [field for field in risk_measure._fields if field!='losses']
+    return df
 class TestTradingStrategy:
+
+    def test_get_all_strategy_risk_measures(self, stock_data:pd.DataFrame) -> None:
+        strategy_risk_measures_dic = {'MA': 'orders_ma_cum_profits', "BB": 'orders_bb_cum_profits',
+                                      'RSI': 'orders_rsi_cum_profits'}
+        all_strategy_risk_measures = get_all_strategy_risk_measures(stock_data)
+        for col in all_strategy_risk_measures.columns:
+            assert col in strategy_risk_measures_dic.keys()
+
+        for col in all_strategy_risk_measures.index:
+            assert col in RiskMeasures._fields
 
     def test_get_risk_measure(self, stock_data:pd.DataFrame) -> None:
         strategy_profit_name = 'orders_ma_cum_profits'

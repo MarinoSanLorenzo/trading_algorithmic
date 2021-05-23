@@ -59,7 +59,10 @@ def get_layout(params: dict) -> html.Div:
                                 ],
                                 data=params.get("information").to_dict("records"),
 
-                            )
+                            ),
+                            html.Hr(),
+                            html.Div('We present here some risk measures for all trading strategies'),
+                            params.get('all_strategy_risk_measures')
                         ],
                     ),
                 ]
