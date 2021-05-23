@@ -28,12 +28,14 @@ def plot_cum_profits(stock_data:pd.DataFrame, strategy_profit_name:str, params:d
     profits = [stock_data.query(f'stock_name=="{stock}"')[[strategy_profit_name, 'stock_name']] for stock in
                params.get(
                    'STOCK_CODES')]
-    profits_first = deepcopy(profits[0])
-    indexes = profits_first.index
-    for i, profit in enumerate(profits):
-        if i > 0:
-            profits_first[strategy_profit_name] += profit[strategy_profit_name]
-    total_cum_profits = profits_first
+    total_cum_profits = deepcopy(profits[0])
+    total_cum_profits = total_cum_profits[~total_cum_profits.index.duplicated()]
+    indexes = total_cum_profits.index
+    for i in range(1,len(profits)):
+            profits_stock = profits[i]
+            profits_stock = profits_stock[~profits_stock.index.duplicated()]
+            total_cum_profits[strategy_profit_name] += profits_stock[strategy_profit_name]
+
     total_cum_profits_df = pd.DataFrame.from_dict({strategy_profit_name: total_cum_profits[strategy_profit_name],
                                                    'stock_name': ['Total Strategy Cumulative Profits' for _ in
                                                                   range(len(total_cum_profits))]})
@@ -91,21 +93,31 @@ def plot_bollinger_bands(df: pd.DataFrame, name: str) -> plotly.graph_objects.Fi
     return fig
 
 def plot_cum_return(stock_data_returns: pd.DataFrame) -> plotly.graph_objects.Figure:
+    try:
+        return plot(stock_data_returns, y="cum_returns", title="Cumulative Returns")
+    except ValueError:
+        stock_data_returns = stock_data_returns[~stock_data_returns.index.duplicated()]
+
     return plot(stock_data_returns, y="cum_returns", title="Cumulative Returns")
 
-def plot_returns_scatter_matrix(stock_data_returns: pd.DataFrame, params:dict, title:str="Scatter Matrix for "
+def plot_returns_scatter_matrix(stock_data: pd.DataFrame, params:dict, title:str="Scatter Matrix for "
                                                                                         "returns")-> \
         plotly.graph_objects.Figure:
-    returns_comp = pd.concat(
-        [
-            stock_data_returns.query(f'stock_name=="{stock}"')["returns"]
-            for stock in params.get("STOCK_CODES")
-        ], axis=1
+
+    df_dic = {}
+    for stock_name in list(stock_data.stock_name.unique()):
+        df =  stock_data.query(f'stock_name=="{stock_name}"')
+        return_stock_name =f'{stock_name.capitalize()} returns'
+        df.rename(columns={'returns':return_stock_name}, inplace=True)
+        df = df[~df.index.duplicated()]
+        df_dic[stock_name] = df
+
+    comp = pd.concat(
+        [df[f'{stock_name.capitalize()} returns'] for stock_name, df in df_dic.items()], axis=1
     )
-    returns_comp.columns = [
-        f"{stock.capitalize()} returns" for stock in params.get("STOCK_CODES")
-    ]
-    return px.scatter_matrix(returns_comp, title=title)
+
+
+    return px.scatter_matrix(comp, title=title)
 
 
 def plot_dist_returns(
