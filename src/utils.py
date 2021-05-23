@@ -3,6 +3,10 @@ import numpy as np
 import pandas as pd
 from collections import defaultdict
 from copy import deepcopy
+from types import FunctionType
+
+import dash_html_components as html
+import dash_core_components as dcc
 
 __all__ = [
     "get_data",
@@ -14,8 +18,17 @@ __all__ = [
     "get_stock_data_returns",
     "get_count_orders",
     "get_count_orders_all",
-    "get_count_orders_all_strat"
+    "get_count_orders_all_strat",
+    'add_multiplots_components'
 ]
+
+def add_multiplots_components(stock_data:pd.DataFrame, plot_func:FunctionType) -> list:
+    plots_lst = []
+    stocks = list(stock_data.stock_name.unique())
+    for stock in stocks:
+        plots_lst.append(dcc.Graph(figure=plot_func(stock_data, stock)))
+        plots_lst.append(html.Hr())
+    return plots_lst
 
 def get_count_orders_all_strat(stock_data:pd.DataFrame, params:dict) -> pd.DataFrame:
     strategies = ['orders_ma_signal', 'orders_bb_signal', 'orders_rsi_signal']

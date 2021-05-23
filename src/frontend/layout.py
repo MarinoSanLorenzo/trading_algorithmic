@@ -32,10 +32,7 @@ def get_layout(params: dict) -> html.Div:
                             *params.get('high_low_plots_lst'),
                             dcc.Graph(figure=params.get("volume_plot")),
                             dcc.Graph(figure=params.get("total_traded_plot")),
-                            dcc.Graph(figure=params.get("bitcoin_moving_average_plot")),
-                            dcc.Graph(
-                                figure=params.get("ethereum_moving_average_plot")
-                            ),
+                            *params.get('moving_average_plots_lst'),
                             dcc.Graph(figure=params.get("scatter_matrix_plot")),
                             html.Div('Distribution of Returns'),
                             dcc.Graph(figure=params.get("dist_returns_plots")),
@@ -45,12 +42,8 @@ def get_layout(params: dict) -> html.Div:
                     ),
                     dcc.Tab(label='Trading analysis',
                             children=[
-                            dcc.Graph(figure=params.get("bitcoin_moving_average_plot")),
-                            dcc.Graph(
-                                figure=params.get("ethereum_moving_average_plot")
-                            ),
-                            dcc.Graph(figure=params.get("bitcoin_bollinger_plot")),
-                            dcc.Graph(figure=params.get("ethereum_bollinger_plot")),
+                                *params.get('moving_average_plots_lst'),
+                                *params.get('bolliger_bans_plots_lst'),
                             dcc.Graph(figure=params.get("rsi_plot")),
                             dcc.Graph(figure=params.get("orders_ma_cum_profits_plot")),
                             dcc.Graph(figure=params.get("orders_bb_cum_profits_plot")),
