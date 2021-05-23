@@ -32,6 +32,7 @@ def get_all_strategy_risk_measures(stock_data:pd.DataFrame,     strategy_risk_me
                 d[strategy].append(getattr(risk_measure, field))
     df = pd.DataFrame.from_dict(d)
     df.index = [field for field in risk_measure._fields if field!='losses']
+    df['risk_measure'] = list(df.index)
     return df
 
 def get_empiric_var(stock_data:pd.DataFrame, strategy_profit_name:str, lvl:float=0.01) -> float:
