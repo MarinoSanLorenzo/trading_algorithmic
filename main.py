@@ -20,14 +20,17 @@ def main():
     ###########################################################
 
     stocks = list(params.get("STOCK_CODES").keys())
-    data = get_data(params, stocks=["bitcoin", "ethereum"])
+    data = get_data(params, stocks=stocks)
     stock_data = stack_data(data)
     stock_data["Total Traded"] = stock_data["Open"] * stock_data["Volume"]
 
     dates_vol_traded = [
         get_date_max_min_volume_traded(stock_data, stock) for stock in stocks
     ]
-    information = pd.merge(*dates_vol_traded, on="variable_name")
+    information = dates_vol_traded[0]
+    for i in range(1, len(dates_vol_traded)):
+        information = pd.merge(information, dates_vol_traded[i],  on="variable_name")
+
 
     stock_data = get_moving_averages(stock_data, params)
     stock_data = get_stock_data_returns(stock_data, params)

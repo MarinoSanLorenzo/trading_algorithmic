@@ -53,8 +53,8 @@ def get_strategy_profits(stock_data:pd.DataFrame, stock_name:str, strategy_name:
     return data
 
 def convert_orders_signal_to_nb(stock_data:pd.DataFrame, serie_name:str) -> pd.DataFrame:
-    if set(('buy', 'hold', 'sell'))!= set(stock_data[serie_name].unique()):
-        raise ValueError
+    # if set(('buy', 'hold', 'sell'))!= set(stock_data[serie_name].unique()):
+    #     raise ValueError
     condition = (stock_data[serie_name] == 'buy',
                  stock_data[serie_name] == 'hold',
                  stock_data[serie_name] == 'sell'

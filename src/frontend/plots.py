@@ -1,15 +1,10 @@
-import numpy as np
 import pandas as pd
 from  copy import deepcopy
-from pandas.plotting import scatter_matrix
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly
-from dash.dependencies import Input, Output
-import dash
+
 import plotly.figure_factory as ff
-from src.constants import params
-from dash_main import *
 
 __all__ = [
     "plot",
@@ -23,6 +18,10 @@ __all__ = [
     "plot_rsi",
     "plot_cum_profits"
 ]
+
+
+
+
 
 def plot_cum_profits(stock_data:pd.DataFrame, strategy_profit_name:str, params:dict,
                      title:str) -> plotly.graph_objects.Figure:
@@ -130,13 +129,23 @@ def plot_dist_returns(
 def plot_scatter_matrix(
     data: dict, params: dict, title="Scatter Matrix for Open Prices"
 ) -> plotly.graph_objects.Figure:
-    crypto_comp = pd.concat(
-        [data[stock]["Open"] for stock in params.get("STOCK_CODES")], axis=1
+    # crypto_comp = pd.concat(
+    #     [data[stock]["Open"] for stock in params.get("STOCK_CODES")], axis=1
+    # )
+    open_data_dic = {}
+    for stock_name, df in data.items():
+        open_price_name =f'{stock_name.capitalize()} Open'
+        df.rename(columns={'Open':open_price_name}, inplace=True)
+        df = df[~df.index.duplicated()]
+        open_data_dic[open_price_name] = df
+
+    comp = pd.concat(
+        [df[open_price_name] for open_price_name, df in open_data_dic.items()], axis=1
     )
-    crypto_comp.columns = [
-        f"{stock.capitalize()} Open" for stock in params.get("STOCK_CODES")
-    ]
-    return px.scatter_matrix(crypto_comp, title=title)
+    # comp.columns = [
+    #     f"{stock.capitalize()} Open" for stock in params.get("STOCK_CODES")
+    # ]
+    return px.scatter_matrix(comp, title=title)
 
 
 def plot(
