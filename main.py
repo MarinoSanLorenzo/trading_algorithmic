@@ -84,6 +84,9 @@ def main():
 
 
     params['bolliger_bans_plots_lst'] =  add_multiplots_components(stock_data, plot_bollinger_bands)
+    params['ma_risk_measures'] = get_risk_measures(stock_data, 'orders_ma_cum_profits')
+    params['bb_risk_measures'] = get_risk_measures(stock_data,  'orders_bb_cum_profits')
+    params['rsi_risk_measures'] = get_risk_measures(stock_data, 'orders_rsi_cum_profits')
     app.layout = get_layout(params)
     app.run_server(debug=True)
 

@@ -10,4 +10,5 @@ params = {
     "END_DATE": datetime.datetime(2021, 1, 1),
     "STOCK_CODES": stock_codes,
     "STYLE_SHEET": ["https://codepen.io/chriddyp/pen/bWLwgP.css"],
+    'chosen_stocks': list(stock_codes.keys())
 }

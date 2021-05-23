@@ -45,7 +45,7 @@ def get_layout(params: dict) -> html.Div:
                                 *params.get('moving_average_plots_lst'),
                                 *params.get('bolliger_bans_plots_lst'),
                             dcc.Graph(figure=params.get("rsi_plot")),
-                            dcc.Graph(figure=params.get("orders_ma_cum_profits_plot")),
+                             dcc.Graph(figure=params.get("orders_ma_cum_profits_plot")),
                             dcc.Graph(figure=params.get("orders_bb_cum_profits_plot")),
                             dcc.Graph(figure=params.get("orders_rsi_cum_profits_plot")),
                             ]),
@@ -58,6 +58,7 @@ def get_layout(params: dict) -> html.Div:
                                     for i in params.get("information").columns
                                 ],
                                 data=params.get("information").to_dict("records"),
+
                             )
                         ],
                     ),
