@@ -47,6 +47,8 @@ def main():
 
     count_orders = get_count_orders_all_strat(stock_data, params)
     information = pd.concat([information, count_orders])
+    all_strat_risk_measures = get_all_strategy_risk_measures(stock_data)
+
 
     params["information"] = information
 
@@ -84,6 +86,7 @@ def main():
 
 
     params['bolliger_bans_plots_lst'] =  add_multiplots_components(stock_data, plot_bollinger_bands)
+    params['all_strategy_risk_measures']  = get_data_table(all_strat_risk_measures)
     app.layout = get_layout(params)
     app.run_server(debug=True)
 

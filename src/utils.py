@@ -7,6 +7,7 @@ from types import FunctionType
 import datetime
 import dash_html_components as html
 import dash_core_components as dcc
+import dash_table
 
 __all__ = [
     "get_data",
@@ -20,8 +21,18 @@ __all__ = [
     "get_count_orders_all",
     "get_count_orders_all_strat",
     'add_multiplots_components',
-    'get_user_inputs'
+    'get_user_inputs',
+    'get_data_table'
 ]
+
+
+def get_data_table(
+    df: pd.DataFrame
+) -> dash_table.DataTable:
+    return dash_table.DataTable(
+        columns=[{"name": i, "id": i} for i in df.columns], data=df.to_dict("records")
+    )
+
 
 
 def get_stock_input(params:dict) -> list:
